@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-from psycopg2 import ProgrammingError
-
 from django.db.backends.postgresql_psycopg2.base import DatabaseWrapper as OrigDatabaseWrapper
 from django.db.backends.postgresql_psycopg2.base import DatabaseOperations as OrigDatabaseOperations
 
@@ -41,10 +39,7 @@ class DatabaseOperations(OrigDatabaseOperations):
                 # intermediate table (see BaseDatabaseIntrospection.sequence_list)
                 column_name = 'id'
             seq_name = get_sequence_name(self.cursor, table_name, column_name)
-            sql.append("%s setval('%s', 1, false);" %
-                (style.SQL_KEYWORD('SELECT'),
-                seq_name)
-            )
+            sql.append("%s setval('%s', 1, false);" % (style.SQL_KEYWORD('SELECT'), seq_name))
         return sql
 
     def sequence_reset_sql(self, style, model_list):
@@ -62,28 +57,36 @@ class DatabaseOperations(OrigDatabaseOperations):
                     table_name = model._meta.db_table
                     column_name = f.column
                     seq_name = get_sequence_name(self.cursor, table_name, column_name)
-                    output.append("%s setval('%s', coalesce(max(%s), 1), max(%s) %s null) %s %s;" %
-                        (style.SQL_KEYWORD('SELECT'),
-                        seq_name,
-                        style.SQL_FIELD(qn(column_name)),
-                        style.SQL_FIELD(qn(column_name)),
-                        style.SQL_KEYWORD('IS NOT'),
-                        style.SQL_KEYWORD('FROM'),
-                        style.SQL_TABLE(qn(table_name))))
+                    output.append(
+                        "%s setval('%s', coalesce(max(%s), 1), max(%s) %s null) %s %s;" %
+                        (
+                            style.SQL_KEYWORD('SELECT'),
+                            seq_name,
+                            style.SQL_FIELD(qn(column_name)),
+                            style.SQL_FIELD(qn(column_name)),
+                            style.SQL_KEYWORD('IS NOT'),
+                            style.SQL_KEYWORD('FROM'),
+                            style.SQL_TABLE(qn(table_name))
+                        )
+                    )
                     break  # Only one AutoField is allowed per model, so don't bother continuing.
             for f in model._meta.many_to_many:
                 if not f.rel.through:
                     table_name = f.m2m_db_table()
                     column_name = 'id'
                     seq_name = get_sequence_name(self.cursor, table_name, column_name)
-                    output.append("%s setval('%s', coalesce(max(%s), 1), max(%s) %s null) %s %s;" %
-                        (style.SQL_KEYWORD('SELECT'),
-                        seq_name,
-                        style.SQL_FIELD(qn(column_name)),
-                        style.SQL_FIELD(qn(column_name)),
-                        style.SQL_KEYWORD('IS NOT'),
-                        style.SQL_KEYWORD('FROM'),
-                        style.SQL_TABLE(qn(table_name))))
+                    output.append(
+                        "%s setval('%s', coalesce(max(%s), 1), max(%s) %s null) %s %s;" %
+                        (
+                            style.SQL_KEYWORD('SELECT'),
+                            seq_name,
+                            style.SQL_FIELD(qn(column_name)),
+                            style.SQL_FIELD(qn(column_name)),
+                            style.SQL_KEYWORD('IS NOT'),
+                            style.SQL_KEYWORD('FROM'),
+                            style.SQL_TABLE(qn(table_name))
+                        )
+                    )
         return output
 
 
