@@ -11,7 +11,7 @@ INSTALLED_APPS = [
 
 DATABASE_URL = os.getenv('DATABASE_URL')
 DATABASES = {
-    'default': dj_database_url.parse(DATABASE_URL, engine='postgres_legacy'),
+    'default': dj_database_url.parse(DATABASE_URL, engine='dpb.postgres_sequencesafe'),
 }
 
 MIDDLEWARE_CLASSES = []

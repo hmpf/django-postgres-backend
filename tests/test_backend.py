@@ -5,7 +5,7 @@ from django.db import connection, connections, DEFAULT_DB_ALIAS
 from django.db.utils import ConnectionHandler
 from django.test import TestCase
 
-from postgres_legacy.base import get_sequence_name
+from dpb.postgres_sequencesafe.base import get_sequence_name
 
 from tests.models import *
 
